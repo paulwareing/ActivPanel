@@ -20,7 +20,6 @@ eventsToLog.forEach(eventType => {
   document.addEventListener(eventType, event => {
     if (event.touches && event.touches.length > 0) {
       Array.from(event.touches).forEach(touch => {
-        console.debug(`Touch identifier: ${touch.identifier}, Pointer ID: ${event.pointerId}`); // Debug log for identifier and pointerId
         logEvent({
           type: event.type,
           clientX: touch.clientX,
