@@ -10,6 +10,12 @@
             "request": "launch",
             "name": "Open event_log.htm",
             "file": "./tools/web/event_log/event_log.htm"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Scribble App",
+            "file": "${workspaceFolder}/scribble-app/public/index.html"
         }
     ]
 }
