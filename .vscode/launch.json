@@ -9,7 +9,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Open event_log.htm",
-            "file": "/Users/paulwareing/Downloads/Projects/ActivPanel/tools/web/event_log/event_log.htm"
+            "file": "./tools/web/event_log/event_log.htm"
         }
     ]
 }
