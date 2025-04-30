@@ -1,3 +1,8 @@
+/**
+ * Author: Paul Wareing
+ * Version: 1.0
+ */
+
 const canvas = document.getElementById('scribbleCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -41,7 +46,8 @@ canvas.addEventListener('pointermove', (event) => {
         currentContacts[contactId].x = event.clientX;
         currentContacts[contactId].y = event.clientY;
 
-        ctx.lineWidth = 2;
+        ctx.lineWidth = event.pointerType === 'pen' ? Math.max(1, event.pressure * 20) : 2; // Adjust width for pen pressure
+        ctx.lineWidth = event.pointerType === 'touch' ? Math.max(1, event.radiusX * 2) : 2; // Adjust width for touch size
         ctx.lineCap = 'round';
         ctx.strokeStyle = currentContacts[contactId].color;
 

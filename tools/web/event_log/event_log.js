@@ -1,3 +1,8 @@
+/**
+ * Author: Paul Wareing
+ * Version: 1.0
+ */
+
 const logDiv = document.getElementById('log');
 
 function logEvent(event) {
