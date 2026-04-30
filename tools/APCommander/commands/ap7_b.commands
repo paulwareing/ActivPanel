@@ -1,0 +1,133 @@
+<apcommands panel="ap7">
+    <port baudRate="115200" parity="None" dataBits="8" stopBits="1"/>
+    <command name="Power Status?" bytes="F6 01 02 00 F9 6F" response="enum">
+        <enum value="01" result="On"/>
+        <enum value="02" result="Standby"/>
+    </command>
+    <command name="Power On" bytes="F6 01 01 01 F9 6F"/>
+    <command name="Standby" bytes="F6 01 01 00 F8 6F"/>
+    <command name="Sleep" bytes="F6 01 05 00 FC 6F"/>
+    <command name="Scaler FW Version?" bytes="F6 03 01 00 FA 6F" response="string"/>
+    <command name="Touch FW Version?" bytes="F6 03 02 00 FB 6F" response="string"/>
+    <command name="Touch SN?" bytes="F6 03 03 00 FC 6F" response="string"/>
+    <command name="Panel SN?" bytes="F6 03 04 00 FD 6F" response="string"/>
+    <command name="Panel Model Number?" bytes="F6 03 05 00 FE 6F" response="string"/>
+    <command name="Factory Reset" bytes="F6 03 06 00 FF 6F"/>
+    <command name="Reset Apps and Data" bytes="F6 3B 01 01 33 6F"/>
+    <command name="Volume?" bytes="F6 0C 02 00 04 6F" response="value"/>
+    <command name="Volume Up" bytes="F6 0C 00 01 03 6F"/>
+    <command name="Volume Down" bytes="F6 0C 00 00 02 6F"/>
+    <command name="Set Volume..." bytes="F6 0C 01 00 03 6F" input="value" min="0" max="100"/>
+    <command name="Mute?" bytes="F6 02 02 00 FA 6F" response="enum">
+        <enum value="00" result="Off"/>
+        <enum value="01" result="On"/>
+    </command>
+    <command name="Mute On" bytes="F6 02 00 01 F9 6F"/>
+    <command name="Mute Off" bytes="F6 02 00 00 F8 6F"/>
+    <command name="Source?" bytes="F6 30 02 00 28 6F" response="enum">
+        <enum value="08" result="VGA"/>
+        <enum value="09" result="HDMI"/>
+        <enum value="0A" result="HDMI2"/>
+        <enum value="13" result="HDMI3"/>
+        <enum value="14" result="DP"/>
+        <enum value="12" result="OPS"/>
+        <enum value="0B" result="Android"/>
+    </command>
+    <command name="Set VGA" bytes="F6 30 01 08 2F 6F"/>
+    <command name="Set HDMI" bytes="F6 30 01 09 30 6F"/>
+    <command name="Set HDMI2" bytes="F6 30 01 0A 31 6F"/>
+    <command name="Set HDMI3" bytes="F6 30 01 13 3A 6F"/>
+    <command name="Set DP" bytes="F6 30 01 14 3B 6F"/>
+    <command name="Set OPS" bytes="F6 30 01 12 39 6F"/>
+    <command name="Set Android" bytes="F6 30 01 0B 32 6F"/>
+    <command name="OPS Installed?" bytes="F6 31 02 00 29 6F" response="enum">
+        <enum value="00" result="No"/>
+        <enum value="01" result="Yes"/>
+    </command>
+    <command name="OPS On/Off?" bytes="F6 31 03 00 2A 6F" response="enum">
+        <enum value="00" result="Off"/>
+        <enum value="01" result="On"/>
+    </command>
+    <command name="OPS On" bytes="F6 31 01 01 29 6F"/>
+    <command name="OPS Off" bytes="F6 31 01 02 2A 6F"/>
+    <command name="Freeze?" bytes="F6 32 02 00 2A 6F" response="enum">
+        <enum value="00" result="Off"/>
+        <enum value="01" result="On"/>
+    </command>
+    <command name="Freeze On" bytes="F6 32 01 01 2A 6F"/>
+    <command name="Freeze Off" bytes="F6 32 01 02 2B 6F"/>
+    <command name="Blank?" bytes="F6 35 02 00 2D 6F" response="enum">
+        <enum value="00" result="Off"/>
+        <enum value="01" result="On"/>
+    </command>
+    <command name="Blank On" bytes="F6 35 01 00 2C 6F"/>
+    <command name="Blank Off" bytes="F6 35 01 01 2D 6F"/>
+    <command name="Touch Lock?" bytes="F6 36 02 00 2E 6F" response="enum">
+        <enum value="00" result="On"/>
+        <enum value="01" result="Off"/>
+    </command>
+    <command name="Touch Lock On" bytes="F6 36 01 00 2D 6F"/>
+    <command name="Touch Lock Off" bytes="F6 36 01 01 2E 6F"/>
+    <command name="Remote Lock?" bytes="F6 37 02 00 2F 6F" response="enum">
+        <enum value="00" result="Off"/>
+        <enum value="01" result="On"/>
+    </command>
+    <command name="Remote Lock On" bytes="F6 37 01 00 2E 6F"/>
+    <command name="Remote Lock Off" bytes="F6 37 01 01 2F 6F"/>
+    <command name="Standby Time?" bytes="F6 39 04 00 33 6F" response="value"/>
+    <command name="Set Standby Time..." bytes="F6 39 03 00 32 6F" input="value" min="0" max="255"/>
+    <command name="Sleep Time?" bytes="F6 3A 04 00 34 6F" response="value"/>
+    <command name="Set Sleep Time..." bytes="F6 3A 03 00 33 6F" input="value" min="0" max="255"/>
+    <command name="Picture Mode?" bytes="F6 34 01 00 2B 6F" response="enum">
+        <enum value="00" result="Lightness"/>
+        <enum value="01" result="Standard"/>
+        <enum value="02" result="Soft"/>
+        <enum value="03" result="User"/>
+        <enum value="04" result="Game"/>
+        <enum value="05" result="Auto"/>
+        <enum value="06" result="PC"/>
+        <enum value="07" result="Vivid"/>
+        <enum value="08" result="Natural"/>
+        <enum value="09" result="Sports"/>
+    </command>
+    <command name="Picture Mode Lightness" bytes="F6 34 02 00 2C 6F"/>
+    <command name="Picture Mode Standard" bytes="F6 34 02 01 2D 6F"/>
+    <command name="Picture Mode Soft" bytes="F6 34 02 02 2E 6F"/>
+    <command name="Picture Mode User" bytes="F6 34 02 03 2F 6F"/>
+    <command name="Picture Mode Game" bytes="F6 34 02 04 30 6F"/>
+    <command name="Picture Mode Auto" bytes="F6 34 02 05 31 6F"/>
+    <command name="Picture Mode PC" bytes="F6 34 02 06 32 6F"/>
+    <command name="Picture Mode Vivid" bytes="F6 34 02 07 33 6F"/>
+    <command name="Picture Mode Natural" bytes="F6 34 02 08 34 6F"/>
+    <command name="Picture Mode Sports" bytes="F6 34 02 09 35 6F"/>
+    <command name="Contrast?" bytes="F6 34 03 00 2D 6F" response="value"/>
+    <command name="Set Contrast..." bytes="F6 34 04 00 2E 6F" input="value" min="0" max="100"/>
+    <command name="Brightness?" bytes="F6 34 05 00 2F 6F" response="value"/>
+    <command name="Set Brightness..." bytes="F6 34 06 00 30 6F" input="value" min="0" max="100"/>
+    <command name="Sharpness?" bytes="F6 34 07 00 31 6F" response="value"/>
+    <command name="Set Sharpness..." bytes="F6 34 08 00 32 6F" input="value" min="0" max="100"/>
+    <command name="Color Temp?" bytes="F6 34 09 00 33 6F" response="enum">
+        <enum value="00" result="Cold"/>
+        <enum value="01" result="Natural"/>
+        <enum value="02" result="Warm"/>
+        <enum value="03" result="User"/>
+    </command>
+    <command name="Set Color Temp Cold" bytes="F6 34 0A 00 34 6F"/>
+    <command name="Set Color Temp Natural" bytes="F6 34 0A 01 35 6F"/>
+    <command name="Set Color Temp Warm" bytes="F6 34 0A 02 36 6F"/>
+    <command name="Set Color Temp User" bytes="F6 34 0A 03 37 6F"/>
+    <command name="Backlight Level?" bytes="F6 34 0B 00 35 6F" response="value"/>
+    <command name="Set Backlight Level..." bytes="F6 34 0C 00 36 6F" input="value" min="0" max="100"/>
+    <command name="Backlight Mode?" bytes="F6 34 0F 00 39 6F" response="enum">
+        <enum value="00" result="Standard"/>
+        <enum value="01" result="Auto"/>
+        <enum value="02" result="Eye Protection"/>
+        <enum value="03" result="Energy"/>
+    </command>
+    <command name="Backlight Mode Standard" bytes="F6 34 0E 00 38 6F"/>
+    <command name="Backlight Mode Auto" bytes="F6 34 0E 01 39 6F"/>
+    <command name="Backlight Mode Eye Protection" bytes="F6 34 0E 02 3A 6F"/>
+    <command name="Backlight Mode Energy" bytes="F6 34 0E 03 3B 6F"/>
+    <command name="Picture Reset" bytes="F6 34 0D 00 37 6F"/>
+    <command name="Generic UART Send" bytes="F6 3F 00 00 00 00 00 6F" input="message"/>
+</apcommands>

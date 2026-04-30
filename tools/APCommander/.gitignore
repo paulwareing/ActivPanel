@@ -1,0 +1,6 @@
+*.rc
+.DS_Store
+/release
+/debug
+/build
+/.qtcreator

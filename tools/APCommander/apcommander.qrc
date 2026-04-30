@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+    	<file alias="remote.png">images/remote.png</file>
+        <file alias="connect.png">images/connect.png</file>
+        <file alias="disconnect.png">images/disconnect.png</file>
+        <file alias="refresh.png">images/refresh.png</file>
+    </qresource>
+</RCC>
