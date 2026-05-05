@@ -29,6 +29,11 @@ ScribbleView::ScribbleView(QWidget *parent)
     setMouseTracking(true);
 
     _pen = QPen(Qt::black, 3.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+
+    connect(&inertiaTimer, SIGNAL(timeout()), this, SLOT(onInertiaTimer()));
+    inertiaTimer.setInterval(16); // ~60 FPS
+
 }
 
 void ScribbleView::mousePressEvent(QMouseEvent *event)
@@ -58,7 +63,6 @@ void ScribbleView::mouseMoveEvent(QMouseEvent *event)
     if (event->source() != Qt::MouseEventNotSynthesized)
         return;
 
-    QPoint delta = event->pos() - lastMousePos;
     if (event->buttons() & Qt::LeftButton && currentPathItem)
     {
         QPointF scenePos = mapToScene(event->pos());
@@ -76,7 +80,15 @@ void ScribbleView::mouseMoveEvent(QMouseEvent *event)
 
     if (event->buttons() & Qt::RightButton)
     {
-        translate(0, delta.y());
+        qreal dy = event->pos().y() - lastMousePos.y();
+        translate(0, dy);
+
+        qint64 dt = velocityClock.restart();
+        if (dt > 0)
+            velocityY = dy * (16.0 / dt); // normalize
+
+        inertiaTimer.stop(); // user is in control
+        velocityClock.start();
     }
 
     lastMousePos = event->pos();
@@ -90,6 +102,13 @@ void ScribbleView::mouseReleaseEvent(QMouseEvent *event)
 
     if (event->button() == Qt::LeftButton)
         currentPathItem = nullptr;
+
+    if (event->button() == Qt::RightButton)
+    {
+        if (std::abs(velocityY) > minVelocity)
+            inertiaTimer.start();
+    }
+
 
     QGraphicsView::mouseReleaseEvent(event);
 }
@@ -160,13 +179,28 @@ bool ScribbleView::viewportEvent(QEvent *event)
 
         if (event->type() == QEvent::TouchBegin)
         {
+            velocityClock.start();
+            velocityY = 0.0;
+            inertiaTimer.stop();
+
             lastTouchPos = pos;
         }
         else if (event->type() == QEvent::TouchUpdate)
         {
             qreal dy = pos.y() - lastTouchPos.y();
             translate(0, dy);
+
+            qint64 dt = velocityClock.restart();
+            if (dt > 0)
+                velocityY = dy * (16.0 / dt);
+
+            inertiaTimer.stop();
             lastTouchPos = pos;
+        }
+        else if (event->type() == QEvent::TouchEnd)
+        {
+            if (std::abs(velocityY) > minVelocity)
+                inertiaTimer.start();
         }
 
         event->accept();
@@ -174,4 +208,16 @@ bool ScribbleView::viewportEvent(QEvent *event)
     }
 
     return QGraphicsView::viewportEvent(event);
+}
+
+void ScribbleView::onInertiaTimer(void)
+{
+    if (std::abs(velocityY) < minVelocity)
+    {
+        inertiaTimer.stop();
+        return;
+    }
+
+    translate(0, velocityY);
+    velocityY *= friction;
 }

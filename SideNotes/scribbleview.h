@@ -4,6 +4,8 @@
 #include <QGraphicsView>
 #include <QGraphicsPathItem>
 #include <QMouseEvent>
+#include <QTimer>
+#include <QElapsedTimer>
 
 class ScribbleView : public QGraphicsView
 {
@@ -11,6 +13,9 @@ class ScribbleView : public QGraphicsView
 
 public:
     explicit ScribbleView(QWidget *parent = nullptr);
+
+public slots:
+    void onInertiaTimer(void);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -28,6 +33,14 @@ private:
     QGraphicsPathItem *currentPathItem = nullptr;
 
     QPen _pen;
+
+    QTimer inertiaTimer;
+    qreal velocityY = 0.0;
+    QElapsedTimer velocityClock;
+
+    static constexpr qreal friction = 0.90;   // slows motion
+    static constexpr qreal minVelocity = 0.5; // stop threshold
+
 };
 
 #endif // SCRIBBLEVIEW_H
