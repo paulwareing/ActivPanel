@@ -9,7 +9,8 @@ ScribbleView::ScribbleView(QWidget *parent)
     : QGraphicsView(parent)
 {
     setStyleSheet("background: transparent;");
-    viewport()->setStyleSheet("background: rgba(255, 255, 255, 40);");
+    viewport()->setStyleSheet("background: rgba(16, 16, 100, 200);");
+
 
     auto scene = new QGraphicsScene();
     scene->setSceneRect(0, 0, width(), 200000);
@@ -28,7 +29,7 @@ ScribbleView::ScribbleView(QWidget *parent)
 
     setMouseTracking(true);
 
-    _pen = QPen(Qt::black, 3.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    _pen = QPen(Qt::white, 3.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
 
     connect(&inertiaTimer, SIGNAL(timeout()), this, SLOT(onInertiaTimer()));
