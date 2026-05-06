@@ -25,21 +25,21 @@ protected:
     bool viewportEvent(QEvent *event) override;
 
 private:
-    QPoint lastMousePos;
-    QPointF lastTouchPos;
+    QPoint _lastMousePos;
+    QPointF _lastTouchPos;
 
-    QPointF lastScenePos;
-    QPointF currentItemSceneOffset;
-    QGraphicsPathItem *currentPathItem = nullptr;
+    QPointF _lastScenePos;
+    QPointF _currentItemSceneOffset;
+    QGraphicsPathItem *_currentPathItem = nullptr;
 
     QPen _pen;
 
-    QTimer inertiaTimer;
-    qreal velocityY = 0.0;
-    QElapsedTimer velocityClock;
+    QTimer _inertiaTimer;
+    qreal _velocityY = 0.0;
+    QElapsedTimer _velocityClock;
 
-    static constexpr qreal friction = 0.90;   // slows motion
-    static constexpr qreal minVelocity = 0.5; // stop threshold
+    static constexpr qreal _friction = 0.90;   // slows motion
+    static constexpr qreal _minVelocity = 0.5; // stop threshold
 
 };
 

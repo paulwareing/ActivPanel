@@ -2,8 +2,11 @@
 #include <QScrollBar>
 #include <QPen>
 #include <QTabletEvent>
+#include <QLayout>
 
 #include "scribbleview.h"
+
+#define DEFAULT_SCRIBBLE_HEIGHT     200000
 
 ScribbleView::ScribbleView(QWidget *parent)
     : QGraphicsView(parent)
@@ -11,10 +14,6 @@ ScribbleView::ScribbleView(QWidget *parent)
     setStyleSheet("background: transparent;");
     viewport()->setStyleSheet("background: rgba(16, 16, 100, 200);");
 
-
-    auto scene = new QGraphicsScene();
-    scene->setSceneRect(0, 0, width(), 200000);
-    setScene(scene);
 
     setRenderHint(QPainter::Antialiasing);
     setTransformationAnchor(QGraphicsView::NoAnchor);
@@ -29,12 +28,14 @@ ScribbleView::ScribbleView(QWidget *parent)
 
     setMouseTracking(true);
 
+    auto scene = new QGraphicsScene();
+    scene->setSceneRect(0, 0, width(), DEFAULT_SCRIBBLE_HEIGHT);
+    setScene(scene);
+
     _pen = QPen(Qt::white, 3.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
-
-    connect(&inertiaTimer, SIGNAL(timeout()), this, SLOT(onInertiaTimer()));
-    inertiaTimer.setInterval(16); // ~60 FPS
-
+    connect(&_inertiaTimer, SIGNAL(timeout()), this, SLOT(onInertiaTimer()));
+    _inertiaTimer.setInterval(16); // ~60 FPS
 }
 
 void ScribbleView::mousePressEvent(QMouseEvent *event)
@@ -42,18 +43,18 @@ void ScribbleView::mousePressEvent(QMouseEvent *event)
     if (event->source() != Qt::MouseEventNotSynthesized)
         return;
 
-    lastMousePos = event->pos();
+    _lastMousePos = event->pos();
 
     if (event->button() == Qt::LeftButton)
     {
-        lastScenePos = mapToScene(event->pos());
-        currentItemSceneOffset = lastScenePos;
+        _lastScenePos = mapToScene(event->pos());
+        _currentItemSceneOffset = _lastScenePos;
 
         QPainterPath path;
-        currentPathItem = scene()->addPath(path, _pen);
+        _currentPathItem = scene()->addPath(path, _pen);
 
         // QGraphicsPathItems always start at 0,0, so the whole item needs translating to the scene start pos...
-        currentPathItem->setPos(currentItemSceneOffset);
+        _currentPathItem->setPos(_currentItemSceneOffset);
      }
 
     QGraphicsView::mousePressEvent(event);
@@ -64,35 +65,35 @@ void ScribbleView::mouseMoveEvent(QMouseEvent *event)
     if (event->source() != Qt::MouseEventNotSynthesized)
         return;
 
-    if (event->buttons() & Qt::LeftButton && currentPathItem)
+    if (event->buttons() & Qt::LeftButton && _currentPathItem)
     {
         QPointF scenePos = mapToScene(event->pos());
 
-        if (scenePos != lastScenePos)
+        if (scenePos != _lastScenePos)
         {
-            QPainterPath path = currentPathItem->path();
+            QPainterPath path = _currentPathItem->path();
             // And when we add new path lines we need to take the item/scene offset back into account.
-            path.lineTo(scenePos - currentItemSceneOffset);
-            currentPathItem->setPath(path);
+            path.lineTo(scenePos - _currentItemSceneOffset);
+            _currentPathItem->setPath(path);
 
-            lastScenePos = scenePos;
+            _lastScenePos = scenePos;
         }
     }
 
     if (event->buttons() & Qt::RightButton)
     {
-        qreal dy = event->pos().y() - lastMousePos.y();
+        qreal dy = event->pos().y() - _lastMousePos.y();
         translate(0, dy);
 
-        qint64 dt = velocityClock.restart();
+        qint64 dt = _velocityClock.restart();
         if (dt > 0)
-            velocityY = dy * (16.0 / dt); // normalize
+            _velocityY = dy * (16.0 / dt); // normalize
 
-        inertiaTimer.stop(); // user is in control
-        velocityClock.start();
+        _inertiaTimer.stop(); // user is in control
+        _velocityClock.start();
     }
 
-    lastMousePos = event->pos();
+    _lastMousePos = event->pos();
     QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -102,14 +103,13 @@ void ScribbleView::mouseReleaseEvent(QMouseEvent *event)
         return;
 
     if (event->button() == Qt::LeftButton)
-        currentPathItem = nullptr;
+        _currentPathItem = nullptr;
 
     if (event->button() == Qt::RightButton)
     {
-        if (std::abs(velocityY) > minVelocity)
-            inertiaTimer.start();
+        if (std::abs(_velocityY) > _minVelocity)
+            _inertiaTimer.start();
     }
-
 
     QGraphicsView::mouseReleaseEvent(event);
 }
@@ -128,33 +128,33 @@ void ScribbleView::tabletEvent(QTabletEvent *event)
     {
     case QEvent::TabletPress:
     {
-        lastScenePos = scenePos;
-        currentItemSceneOffset = lastScenePos;
+        _lastScenePos = scenePos;
+        _currentItemSceneOffset = _lastScenePos;
 
         QPainterPath path;
-        currentPathItem = scene()->addPath(path, _pen);
+        _currentPathItem = scene()->addPath(path, _pen);
 
         // QGraphicsPathItems always start at 0,0, so the whole item needs translating to the scene start pos...
-        currentPathItem->setPos(currentItemSceneOffset);
+        _currentPathItem->setPos(_currentItemSceneOffset);
 
         break;
     }
 
     case QEvent::TabletMove:
     {
-        if (!currentPathItem)
+        if (!_currentPathItem)
             break;
 
-        QPainterPath path = currentPathItem->path();
-        path.lineTo(scenePos - currentItemSceneOffset);
-        currentPathItem->setPath(path);
+        QPainterPath path = _currentPathItem->path();
+        path.lineTo(scenePos - _currentItemSceneOffset);
+        _currentPathItem->setPath(path);
 
-        lastScenePos = scenePos;
+        _lastScenePos = scenePos;
         break;
     }
 
     case QEvent::TabletRelease:
-        currentPathItem = nullptr;
+        _currentPathItem = nullptr;
         break;
 
     default:
@@ -180,28 +180,28 @@ bool ScribbleView::viewportEvent(QEvent *event)
 
         if (event->type() == QEvent::TouchBegin)
         {
-            velocityClock.start();
-            velocityY = 0.0;
-            inertiaTimer.stop();
+            _velocityClock.start();
+            _velocityY = 0.0;
+            _inertiaTimer.stop();
 
-            lastTouchPos = pos;
+            _lastTouchPos = pos;
         }
         else if (event->type() == QEvent::TouchUpdate)
         {
-            qreal dy = pos.y() - lastTouchPos.y();
+            qreal dy = pos.y() - _lastTouchPos.y();
             translate(0, dy);
 
-            qint64 dt = velocityClock.restart();
+            qint64 dt = _velocityClock.restart();
             if (dt > 0)
-                velocityY = dy * (16.0 / dt);
+                _velocityY = dy * (16.0 / dt);
 
-            inertiaTimer.stop();
-            lastTouchPos = pos;
+            _inertiaTimer.stop();
+            _lastTouchPos = pos;
         }
         else if (event->type() == QEvent::TouchEnd)
         {
-            if (std::abs(velocityY) > minVelocity)
-                inertiaTimer.start();
+            if (std::abs(_velocityY) > _minVelocity)
+                _inertiaTimer.start();
         }
 
         event->accept();
@@ -213,12 +213,12 @@ bool ScribbleView::viewportEvent(QEvent *event)
 
 void ScribbleView::onInertiaTimer(void)
 {
-    if (std::abs(velocityY) < minVelocity)
+    if (std::abs(_velocityY) < _minVelocity)
     {
-        inertiaTimer.stop();
+        _inertiaTimer.stop();
         return;
     }
 
-    translate(0, velocityY);
-    velocityY *= friction;
+    translate(0, _velocityY);
+    _velocityY *= _friction;
 }

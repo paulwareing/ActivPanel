@@ -17,8 +17,8 @@ protected:
     void showEvent(QShowEvent *event) override;
 
 private:
-    Tray * m_leftTray;
-    Tray * m_rightTray;
+    Tray * _leftTray;
+    Tray * _rightTray;
 };
 
 #endif // MAINWINDOW_H

@@ -8,22 +8,21 @@
 
 Tray::Tray(Qt::Alignment side, QWidget *parent)
     : QWidget{parent}
-    , m_side(side)
+    , _side(side)
+    , _open(false)
 {
-    m_open = false;
+    _open = false;
 
     auto layout = new QHBoxLayout(this);
     setLayout(layout);
     layout->setSpacing(0);
     layout->setContentsMargins(0,0,0,0);
 
-    auto toolbar = new Toolbar();
     auto scribbleview = new ScribbleView();
     auto tabLayout = new QVBoxLayout();
 
-    if (m_side == Qt::AlignLeft)
+    if (_side == Qt::AlignLeft)
     {
-        layout->addWidget(toolbar);
         layout->addWidget(scribbleview);
         layout->addLayout(tabLayout);
     }
@@ -31,7 +30,6 @@ Tray::Tray(Qt::Alignment side, QWidget *parent)
     {
         layout->addLayout(tabLayout);
         layout->addWidget(scribbleview);
-        layout->addWidget(toolbar);
     }
 
     auto w1 = new QWidget(this);
@@ -43,6 +41,17 @@ Tray::Tray(Qt::Alignment side, QWidget *parent)
 
     auto w2 = new QWidget(this);
     tabLayout->addWidget(w2);
+
+    _toolbar = new Toolbar(scribbleview);
+    _toolbar->raise();
+}
+
+void Tray::showEvent(QShowEvent */*event*/)
+{
+    if (_side == Qt::AlignRight)
+       _toolbar->move(width()-_toolbar->width()-TAB_WIDTH-10, (height()/2)-(_toolbar->height()/2));
+    else
+        _toolbar->move(10, (height()/2)-(_toolbar->height()/2));
 }
 
 void Tray::onTogglePosition()
@@ -50,18 +59,18 @@ void Tray::onTogglePosition()
     QPropertyAnimation *anim = new QPropertyAnimation(this, "pos");
     anim->setDuration(300);
     anim->setStartValue(pos());
-    if (!m_open)
-        if (m_side == Qt::AlignLeft)
+    if (!_open)
+        if (_side == Qt::AlignLeft)
             anim->setEndValue(QPoint(0,0));
         else
             anim->setEndValue(QPoint(width(),0));
     else
-        if (m_side == Qt::AlignLeft)
+        if (_side == Qt::AlignLeft)
             // ensure the tab is shown even when the tray is off-screen
             anim->setEndValue(QPoint(0-width()+TAB_WIDTH, 0));
         else
             anim->setEndValue(QPoint((width()*2)-TAB_WIDTH,0));
-    m_open = !m_open;
+    _open = !_open;
     anim->setEasingCurve(QEasingCurve::InOutQuad);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }

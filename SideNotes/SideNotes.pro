@@ -9,6 +9,7 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    pushbutton.cpp \
     scribbleview.cpp \
     tab.cpp \
     toolbar.cpp \
@@ -16,10 +17,14 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h \
+    pushbutton.h \
     scribbleview.h \
     tab.h \
     toolbar.h \
     tray.h
+
+RESOURCES += \
+    qresource.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

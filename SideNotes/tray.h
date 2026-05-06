@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+class Toolbar;
+
 class Tray : public QWidget
 {
     Q_OBJECT
@@ -13,11 +15,15 @@ public:
 public slots:
     void onTogglePosition();
 
+protected:
+    void showEvent(QShowEvent *) override;
+
 signals:
 
 private:
-    Qt::Alignment m_side;
-    bool m_open;
+    Toolbar * _toolbar;
+    Qt::Alignment _side;
+    bool _open;
 };
 
 #endif // TRAY_H

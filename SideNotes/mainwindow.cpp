@@ -10,8 +10,8 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , m_leftTray(nullptr)
-    , m_rightTray(nullptr)
+    , _leftTray(nullptr)
+    , _rightTray(nullptr)
 {
     QScreen *primaryScreen = QGuiApplication::primaryScreen();
     if (primaryScreen)
@@ -33,21 +33,21 @@ MainWindow::~MainWindow() = default;
 
 void MainWindow::showEvent(QShowEvent */*event*/)
 {
-    if (m_leftTray == nullptr)
+    if (_leftTray == nullptr)
     {
         // Add the left hand tray, and hang it off the LHS with only the tray tab visible.
-        m_leftTray = new Tray(Qt::AlignLeft, this);
-        m_leftTray->setFixedSize(QSize((width()/2), height()));
-        m_leftTray->move(m_leftTray->mapToParent(QPoint(0-(width()/2)+TAB_WIDTH, 0)));
-        m_leftTray->show();
+        _leftTray = new Tray(Qt::AlignLeft, this);
+        _leftTray->setFixedSize(QSize((width()/2), height()));
+        _leftTray->move(_leftTray->mapToParent(QPoint(0-(width()/2)+TAB_WIDTH, 0)));
+        _leftTray->show();
     }
 
-    if (m_rightTray == nullptr)
+    if (_rightTray == nullptr)
     {
         // Add the right hand tray, and hang it off the RHS with only the tray tab visible.
-        m_rightTray = new Tray(Qt::AlignRight, this);
-        m_rightTray->setFixedSize(QSize((width()/2), height()));
-        m_rightTray->move(m_rightTray->mapToParent(QPoint(width() - TAB_WIDTH, 0)));
-        m_rightTray->show();
+        _rightTray = new Tray(Qt::AlignRight, this);
+        _rightTray->setFixedSize(QSize((width()/2), height()));
+        _rightTray->move(_rightTray->mapToParent(QPoint(width() - TAB_WIDTH, 0)));
+        _rightTray->show();
     }
 }

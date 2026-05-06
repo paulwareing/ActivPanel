@@ -3,8 +3,6 @@
 
 #include <QWidget>
 
-#define TOOLBAR_WIDTH   30
-
 class Toolbar : public QWidget
 {
     Q_OBJECT
