@@ -3,19 +3,17 @@
 
 #include <QWidget>
 
-#define TAB_WIDTH       20
-#define TAB_HEIGHT      100
+#define TAB_WIDTH       2
 
 class Tab : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Tab(QWidget *parent = nullptr);
+    explicit Tab(QSize size, QWidget *parent = nullptr);
 
 protected:
-    void mousePressEvent(QMouseEvent *);
-    void paintEvent(QPaintEvent *);
+    void mousePressEvent(QMouseEvent *) override;
 
 signals:
     void clicked();

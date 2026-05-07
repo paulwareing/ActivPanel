@@ -10,7 +10,7 @@ class Tray : public QWidget
     Q_OBJECT
 
 public:
-    explicit Tray(Qt::Alignment, QWidget *parent = nullptr);
+    explicit Tray(Qt::Alignment, QSize size, QWidget *parent = nullptr);
 
 public slots:
     void onTogglePosition();

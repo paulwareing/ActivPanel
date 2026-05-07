@@ -4,27 +4,15 @@
 
 #include "tab.h"
 
-Tab::Tab(QWidget *parent)
+Tab::Tab(QSize size, QWidget *parent)
     : QWidget{parent}
 {
-    setAutoFillBackground(false);
-    setFixedSize(TAB_WIDTH, TAB_HEIGHT);
+    setAttribute(Qt::WA_StyledBackground, true);
+    setStyleSheet("background: rgba(5, 5, 5, 5);");
+    setFixedSize(TAB_WIDTH, size.height());
 }
 
 void Tab::mousePressEvent(QMouseEvent *)
 {
     emit clicked();
-}
-
-void Tab::paintEvent(QPaintEvent *)
-{
-    QPainter p(this);
-
-    p.setRenderHint(QPainter::Antialiasing);
-    QPainterPath path;
-    path.addRoundedRect(QRectF(0, 0, TAB_WIDTH, TAB_HEIGHT), 10, 10);
-    QPen pen(Qt::black, -1);
-    p.setPen(pen);
-    p.fillPath(path, QColor(128, 128, 128, 32));
-    p.drawPath(path);
 }

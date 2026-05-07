@@ -6,43 +6,33 @@
 #include "toolbar.h"
 #include "scribbleview.h"
 
-Tray::Tray(Qt::Alignment side, QWidget *parent)
+Tray::Tray(Qt::Alignment side, QSize size, QWidget *parent)
     : QWidget{parent}
     , _side(side)
     , _open(false)
 {
-    _open = false;
-
     auto layout = new QHBoxLayout(this);
     setLayout(layout);
     layout->setSpacing(0);
     layout->setContentsMargins(0,0,0,0);
 
     auto scribbleview = new ScribbleView();
-    connect(scribbleview, SIGNAL(swipeLeft()), this, SLOT(onTogglePosition()));
 
-    auto tabLayout = new QVBoxLayout();
+    auto tab = new Tab(size, this);
+    connect(tab, SIGNAL(clicked()), this ,SLOT(onTogglePosition()));
 
     if (_side == Qt::AlignLeft)
     {
         layout->addWidget(scribbleview);
-        layout->addLayout(tabLayout);
+        layout->addWidget(tab);
+        connect(scribbleview, SIGNAL(swipeLeft()), this, SLOT(onTogglePosition()));
     }
     else
     {
-        layout->addLayout(tabLayout);
+        layout->addWidget(tab);
         layout->addWidget(scribbleview);
+        connect(scribbleview, SIGNAL(swipeRight()), this, SLOT(onTogglePosition()));
     }
-
-    auto w1 = new QWidget(this);
-    tabLayout->addWidget(w1);
-
-    auto tab = new Tab(this);
-    tabLayout->addWidget(tab);
-    connect(tab, SIGNAL(clicked()), this ,SLOT(onTogglePosition()));
-
-    auto w2 = new QWidget(this);
-    tabLayout->addWidget(w2);
 
     _toolbar = new Toolbar(scribbleview);
     _toolbar->raise();
@@ -51,7 +41,7 @@ Tray::Tray(Qt::Alignment side, QWidget *parent)
 void Tray::showEvent(QShowEvent */*event*/)
 {
     if (_side == Qt::AlignRight)
-       _toolbar->move(width()-_toolbar->width()-TAB_WIDTH-10, (height()/2)-(_toolbar->height()/2));
+        _toolbar->move(width()-_toolbar->width()-TAB_WIDTH-10, (height()/2)-(_toolbar->height()/2));
     else
         _toolbar->move(10, (height()/2)-(_toolbar->height()/2));
 }
@@ -73,6 +63,6 @@ void Tray::onTogglePosition()
         else
             anim->setEndValue(QPoint((width()*2)-TAB_WIDTH,0));
     _open = !_open;
-    anim->setEasingCurve(QEasingCurve::InOutQuad);
+    anim->setEasingCurve(QEasingCurve::OutQuad);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
