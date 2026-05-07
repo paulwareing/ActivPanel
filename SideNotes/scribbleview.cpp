@@ -14,7 +14,6 @@ ScribbleView::ScribbleView(QWidget *parent)
     setStyleSheet("background: transparent;");
     viewport()->setStyleSheet("background: rgba(16, 16, 100, 200);");
 
-
     setRenderHint(QPainter::Antialiasing);
     setTransformationAnchor(QGraphicsView::NoAnchor);
     setResizeAnchor(QGraphicsView::NoAnchor);
@@ -178,30 +177,76 @@ bool ScribbleView::viewportEvent(QEvent *event)
         const QTouchEvent::TouchPoint &pt = touchEvent->points().first();
         const QPointF pos = pt.position();
 
-        if (event->type() == QEvent::TouchBegin)
+        switch (event->type())
         {
+        case QEvent::TouchBegin:
+        {
+            _touchStartPos = pos;
+            _lastTouchPos = pos;
+            _touchMode = TouchMode::Unknown;
+
             _velocityClock.start();
             _velocityY = 0.0;
             _inertiaTimer.stop();
-
-            _lastTouchPos = pos;
+            break;
         }
-        else if (event->type() == QEvent::TouchUpdate)
-        {
-            qreal dy = pos.y() - _lastTouchPos.y();
-            translate(0, dy);
 
-            qint64 dt = _velocityClock.restart();
-            if (dt > 0)
-                _velocityY = dy * (16.0 / dt);
+        case QEvent::TouchUpdate:
+        {
+            QPointF delta = pos - _lastTouchPos;
+            QPointF total = pos - _touchStartPos;
+
+            if (_touchMode == TouchMode::Unknown)
+            {
+                if (std::abs(total.y()) > gestureThreshold)
+                {
+                    _touchMode = TouchMode::VerticalScroll;
+                }
+                else if (std::abs(total.x()) > gestureThreshold)
+                {
+                    _touchMode = TouchMode::HorizontalSwipe;
+                }
+            }
+
+            if (_touchMode == TouchMode::VerticalScroll)
+            {
+                qreal dy = delta.y();
+                translate(0, dy);
+
+                qint64 dt = _velocityClock.restart();
+                if (dt > 0)
+                    _velocityY = dy * (16.0 / dt);
+            }
+            else if (_touchMode == TouchMode::HorizontalSwipe)
+            {
+                qreal totalDx = pos.x() - _touchStartPos.x();
+
+                if (totalDx > 50)
+                    emit swipeRight();
+                else if (totalDx < -50)
+                    emit swipeLeft();
+
+            }
 
             _inertiaTimer.stop();
             _lastTouchPos = pos;
+            break;
         }
-        else if (event->type() == QEvent::TouchEnd)
+
+        case QEvent::TouchEnd:
         {
-            if (std::abs(_velocityY) > _minVelocity)
-                _inertiaTimer.start();
+            if (_touchMode == TouchMode::VerticalScroll)
+            {
+                if (std::abs(_velocityY) > _minVelocity)
+                    _inertiaTimer.start();
+            }
+
+            _touchMode = TouchMode::Unknown;
+            break;
+        }
+
+        default:
+            break;
         }
 
         event->accept();

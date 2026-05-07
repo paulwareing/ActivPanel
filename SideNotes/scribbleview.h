@@ -17,6 +17,11 @@ public:
 public slots:
     void onInertiaTimer(void);
 
+signals:
+    void horizontalSwipe(qreal deltaX);
+    void swipeLeft();
+    void swipeRight();
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -25,7 +30,19 @@ protected:
     bool viewportEvent(QEvent *event) override;
 
 private:
+    enum class TouchMode {
+        Unknown,
+        VerticalScroll,
+        HorizontalSwipe
+    };
+
+    TouchMode _touchMode = TouchMode::Unknown;
+
+    static constexpr qreal gestureThreshold = 8.0; // pixels
+
     QPoint _lastMousePos;
+
+    QPointF _touchStartPos;
     QPointF _lastTouchPos;
 
     QPointF _lastScenePos;

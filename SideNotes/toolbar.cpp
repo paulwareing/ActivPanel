@@ -1,3 +1,4 @@
+#include <QCoreApplication>
 #include <QVBoxLayout>
 #include <QIcon>
 
@@ -8,15 +9,6 @@ Toolbar::Toolbar(QWidget *parent)
     : QWidget{parent}
 {
     setFixedWidth(32);
-    setAutoFillBackground(true);
-    setAttribute(Qt::WA_StyledBackground, true);
-
-    setStyleSheet(R"(
-        QWidget {
-            background-color: rgba(27, 27, 27, 200);
-            border-radius: 10px;
-        }
-    )");
 
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(2, 2, 2, 2);
@@ -83,4 +75,6 @@ Toolbar::Toolbar(QWidget *parent)
     exitButton->setToolTip("Exit SideNotes");
     exitButton->setCursor(Qt::PointingHandCursor);
     layout->addWidget(exitButton);
+
+    connect(exitButton, &QPushButton::clicked, qApp, &QCoreApplication::quit);
 }

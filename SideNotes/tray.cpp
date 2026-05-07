@@ -19,6 +19,8 @@ Tray::Tray(Qt::Alignment side, QWidget *parent)
     layout->setContentsMargins(0,0,0,0);
 
     auto scribbleview = new ScribbleView();
+    connect(scribbleview, SIGNAL(swipeLeft()), this, SLOT(onTogglePosition()));
+
     auto tabLayout = new QVBoxLayout();
 
     if (_side == Qt::AlignLeft)
